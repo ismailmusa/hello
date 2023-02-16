@@ -4,33 +4,47 @@ import {CreateTodoRequest} from "../requests/CreateTodoRequest";
 import {UpdateTodoRequest} from "../requests/UpdateTodoRequest";
 import {TodoUpdate} from "../models/TodoUpdate";
 import {TodoAccess} from "../dataLayer/todoAcces";
+import { createLogger } from '../utils/logger';
 
+const logger = createLogger('TodosAccess')
 const uuidv4 = require('uuid/v4');
-const todoAccess = new TodoAccess();
+const data = new TodoAccess();
+const Bucketname = process.env.S3_BUCKET_NAME;
+const todoId =  uuidv4();
+const Url = `https://${Bucketname}.s3.amazonaws.com/${todoId}`
 
-export async function getAllToDo(jwtToken: string): Promise<TodoItem[]> {
-    const userId = parseUserId(jwtToken);
-    return todoAccess.GetallTodo(userId);
+export async function deleteTodo(todo: string, Token: string): Promise<String>  {
+    const Id = parseUserId(Token);
+    return data.deleteTodo(Id, todo)
 }
 
+export function updateTodo(todoUpdate: UpdateTodoRequest, todoId: string, Token: string): Promise<TodoUpdate> {
+    const Id = parseUserId(Token);
+    return data.updateTodo(todoUpdate, todoId, Id);
+}
 
+export async function UploadUrl(Url: string): Promise<string> {
+    logger.info(`Generating upload URL for attachment ${Url}`)
+    const uploadUrl = await data.GenerateUploadUrl(Url)
+    return uploadUrl
+  }
 
+  export async function AllTodo(Token: string): Promise<TodoItem[]> {
+    const Id = parseUserId(Token);
+    return data.GetallTodo(Id);
+}
 
-export function createTodo(createTodoRequest: CreateTodoRequest, jwtToken: string): Promise<TodoItem> {
-    const userId = parseUserId(jwtToken);
-    const todoId =  uuidv4();
-    const s3BucketName = process.env.S3_BUCKET_NAME;
-    
-    return todoAccess.createTodo({
-        userId: userId,
-        todoId: todoId,
-        attachmentUrl:  `https://${s3BucketName}.s3.amazonaws.com/${todoId}`, 
+export function createTodo(TodoRequest: CreateTodoRequest, Token: string): Promise<TodoItem> {
+    const Id = parseUserId(Token);
+    return data.createTodo({
+        userId: Id,
+        todoId: todoId, 
         createdAt: new Date().getTime().toString(),
+        attachmentUrl:  Url, 
         done: false,
-        ...createTodoRequest,
+        ...TodoRequest,
     });
 }
-
 
 
 export function generateUploadUrl(todoId: string): Promise<string> {
