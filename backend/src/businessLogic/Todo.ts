@@ -45,18 +45,3 @@ export function createTodo(TodoRequest: CreateTodoRequest, Token: string): Promi
         ...TodoRequest,
     });
 }
-
-
-export function generateUploadUrl(todoId: string): Promise<string> {
-    return todoAccess.GenerateUploadUrl(todoId);
-}
-
-export function deleteTodo(todoId: string, jwtToken: string): Promise<string> {
-    const userId = parseUserId(jwtToken);
-    return todoAccess.deleteTodo(todoId, userId);
-}
-
-export function updateTodo(updateTodoRequest: UpdateTodoRequest, todoId: string, jwtToken: string): Promise<TodoUpdate> {
-    const userId = parseUserId(jwtToken);
-    return todoAccess.updateTodo(updateTodoRequest, todoId, userId);
-}
