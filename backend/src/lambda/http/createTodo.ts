@@ -7,15 +7,15 @@ import {CreateTodoRequest} from '../../requests/CreateTodoRequest';
 import {getUserId} from '../utils';
 
 export const handler = middy(async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-  const newTodo: CreateTodoRequest = JSON.parse(event.body);
-  const userId = getUserId(event);
+  const Todo: CreateTodoRequest = JSON.parse(event.body);
+  const Id = getUserId(event);
   console.log('Processing event: ', event);
   try {
-    const todoAdded = await createTodo(newTodo, userId);
+    const Items = await createTodo(Todo, Id);
     return {
       statusCode: 201,
       body: JSON.stringify({
-        item: todoAdded
+        item: Items
       })
     }
 
