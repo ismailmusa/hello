@@ -2,18 +2,19 @@ import 'source-map-support/register'
 import {APIGatewayProxyEvent, APIGatewayProxyHandler, APIGatewayProxyResult} from 'aws-lambda'
 import {UpdateTodoRequest} from '../../requests/UpdateTodoRequest'
 import {updateTodo} from "../../businessLogic/Todo";
+import { createLogger } from '../../utils/logger'
+const logger = createLogger('Todo')
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     // TODO: Update a TODO item with the provided id using values in the "updatedTodo" object
-    console.log("Processing Event ", event);
-    const authorization = event.headers.Authorization;
     const split = authorization.split(' ');
     const jwtToken = split[1];
+    const authorization = event.headers.Authorization;
 
-    const todoId = event.pathParameters.todoId;
+    const Id = event.pathParameters.todoId;
     const updatedTodo: UpdateTodoRequest = JSON.parse(event.body);
-
-    const toDoItem = await updateTodo(updatedTodo, todoId, jwtToken);
+    logger.info("processing event ", event)
+    const Items = await updateTodo(updatedTodo, Id, jwtToken);
 
     return {
         statusCode: 200,
@@ -21,7 +22,7 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
             "Access-Control-Allow-Origin": "*",
         },
         body: JSON.stringify({
-            "item": toDoItem
+            "item": Items
         }),
     }
 };
