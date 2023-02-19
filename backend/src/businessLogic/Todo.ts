@@ -7,10 +7,10 @@ import {TodoAccess} from "../dataLayer/todoAcces";
 import { createLogger } from '../utils/logger';
 
 const logger = createLogger('TodosAccess')
+const uuidv4 = require('uuid/v4');
 const data = new TodoAccess();
-const todoId = require('uuid/v4');
 const Bucketname = process.env.S3_BUCKET_NAME;
-
+const todoId =  uuidv4();
 const Url = `https://${Bucketname}.s3.amazonaws.com/${todoId}`
 
 export async function deleteTodo(todo: string, Token: string): Promise<String>  {
@@ -31,7 +31,7 @@ export async function UploadUrl(Url: string): Promise<string> {
 
   export async function AllTodo(Token: string): Promise<TodoItem[]> {
     const Id = parseUserId(Token);
-    return data.GetallTodo(Id);
+    return data.GetTodos(Id);
 }
 
 export function createTodo(TodoRequest: CreateTodoRequest, Token: string): Promise<TodoItem> {
