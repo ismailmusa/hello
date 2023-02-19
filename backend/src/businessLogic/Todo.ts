@@ -7,8 +7,8 @@ import {TodoAccess} from "../dataLayer/todoAcces";
 import { createLogger } from '../utils/logger';
 
 const logger = createLogger('TodosAccess')
-const todoId = require('uuid/v4');
 const data = new TodoAccess();
+const todoId = require('uuid/v4');
 const Bucketname = process.env.S3_BUCKET_NAME;
 
 const Url = `https://${Bucketname}.s3.amazonaws.com/${todoId}`
